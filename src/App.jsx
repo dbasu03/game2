@@ -1,122 +1,79 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import Car from './Car';
+import Traffic from './Traffic';
+import './App.css';
+
+const roadWidth = 600; // Road width
+const roadHeight = 800; // Road height
+const carWidth = 50; // Player car width
+const carHeight = 100; // Player car height
 
 function App() {
-  const [balloonY, setBalloonY] = useState(300);
-  const [velocity, setVelocity] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
-  const [obstacles, setObstacles] = useState([]);
-  const [score, setScore] = useState(0);
+  const [playerPosition, setPlayerPosition] = useState(roadWidth / 2 - carWidth / 2);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
 
-  // Balloon jump logic
-  const jump = () => {
-    if (gameOver) return;
-    setVelocity(-10); // Make the balloon go up
+  // Handle touch events for dragging the car
+  const handleTouchStart = (e) => {
+    const touch = e.touches[0]; // Get the first touch
+    setIsDragging(true);
+    setDragStartX(touch.clientX); // Get the starting position of the drag
   };
 
-  // Handling obstacles and game logic
+  const handleTouchMove = (e) => {
+    if (isDragging) {
+      const touch = e.touches[0]; // Get the first touch
+      const deltaX = touch.clientX - dragStartX;
+      let newPosition = playerPosition + deltaX;
+      // Prevent the car from going out of bounds
+      newPosition = Math.max(0, Math.min(roadWidth - carWidth, newPosition));
+      setPlayerPosition(newPosition);
+      setDragStartX(touch.clientX); // Update the drag start position for smooth dragging
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false); // Stop dragging
+  };
+
+  // Listen for mouse events as a fallback (for non-touch devices)
   useEffect(() => {
-    if (gameOver) return;
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
 
-    const interval = setInterval(() => {
-      // Update balloon's vertical position
-      setBalloonY((prevY) => prevY + velocity);
-      setVelocity((prevVelocity) => prevVelocity + 1); // Gravity effect
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, dragStartX, playerPosition]);
 
-      // Check for ground collision
-      if (balloonY >= 600) {
-        setBalloonY(600);
-        setVelocity(0);
-      }
-
-      // Check for ceiling collision
-      if (balloonY <= 0) {
-        setBalloonY(0);
-        setVelocity(0);
-      }
-
-      // Create new obstacles
-      if (Math.random() < 0.02) {
-        setObstacles((prevObstacles) => [
-          ...prevObstacles,
-          {
-            x: 800,
-            y: Math.random() * 500 + 100,
-          },
-        ]);
-      }
-
-      // Move obstacles and check collision
-      setObstacles((prevObstacles) =>
-        prevObstacles
-          .map((obstacle) => ({ ...obstacle, x: obstacle.x - 3 }))
-          .filter((obstacle) => obstacle.x > -50)
-          .map((obstacle) => {
-            if (
-              obstacle.x > 40 &&
-              obstacle.x < 60 &&
-              Math.abs(balloonY - obstacle.y) < 50
-            ) {
-              setGameOver(true);
-            }
-            return obstacle;
-          })
-      );
-
-      // Update score
-      setScore((prevScore) => prevScore + 1);
-    }, 1000 / 60); // 60 FPS
-
-    return () => clearInterval(interval);
-  }, [velocity, balloonY, obstacles, gameOver]);
-
+  // Listen for arrow key presses to move the car (optional)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.code === "Space") {
-        jump();
+      if (e.key === 'ArrowLeft' && playerPosition > 0) {
+        setPlayerPosition(playerPosition - 10);
+      } else if (e.key === 'ArrowRight' && playerPosition < roadWidth - carWidth) {
+        setPlayerPosition(playerPosition + 10);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  const restartGame = () => {
-    setBalloonY(300);
-    setVelocity(0);
-    setGameOver(false);
-    setObstacles([]);
-    setScore(0);
-  };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [playerPosition]);
 
   return (
     <div className="game-container">
-      <h1>Hot Air Balloon Game</h1>
-      {gameOver && (
-        <div className="game-over">
-          <h2>Game Over!</h2>
-          <p>Your Score: {score}</p>
-          <button onClick={restartGame}>Restart</button>
-        </div>
-      )}
-      <div
-        className="balloon"
-        style={{
-          bottom: `${balloonY}px`,
-        }}
-      ></div>
-      {obstacles.map((obstacle, index) => (
-        <div
-          key={index}
-          className="obstacle"
-          style={{
-            left: `${obstacle.x}px`,
-            height: `${obstacle.y}px`,
-          }}
-        ></div>
-      ))}
-      <p>Score: {score}</p>
+      <div className="road" style={{ width: roadWidth, height: roadHeight }}>
+        {/* Player's car with touch functionality */}
+        <Car
+          position={playerPosition}
+        />
+        
+        {/* Traffic */}
+        <Traffic roadWidth={roadWidth} roadHeight={roadHeight} />
+      </div>
     </div>
   );
 }

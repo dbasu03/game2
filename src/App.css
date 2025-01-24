@@ -1,54 +1,22 @@
 .game-container {
-    position: relative;
-    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
-    background-color: #87ceeb; /* Sky blue background */
+    background-color: #333;
+  }
+  
+  .road {
+    position: relative;
+    background-color: #aaa;
+    margin: 0 auto;
     overflow: hidden;
-    text-align: center;
+    border-radius: 20px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
   }
   
-  .balloon {
-    position: absolute;
-    bottom: 300px;
-    left: 50px;
-    width: 40px;
-    height: 60px;
-    background-color: #ff6347; /* Balloon color */
-    border-radius: 50%;
-  }
-  
-  .obstacle {
-    position: absolute;
-    bottom: 0;
-    left: 800px;
-    width: 40px;
-    background-color: #ffffff; /* Clouds color */
-  }
-  
-  .game-over {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-  }
-  
-  h1 {
-    color: white;
-    margin-top: 20px;
-  }
-  
-  p {
-    color: white;
-  }
-  
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin-top: 10px;
-    cursor: pointer;
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
   }
   
