@@ -4,34 +4,33 @@ function Traffic({ roadWidth, roadHeight }) {
   const [cars, setCars] = useState([]);
   const [score, setScore] = useState(0);
 
-  // Generate new cars at random positions and speeds
   useEffect(() => {
     const interval = setInterval(() => {
       const newCar = {
         id: Date.now(),
         position: Math.random() * roadWidth,
-        speed: Math.random() * 4 + 2, // Random speed
-        yPos: -100, // Start above the screen
+        speed: Math.random() * 4 + 2, 
+        yPos: -100, 
       };
       setCars((prevCars) => [...prevCars, newCar]);
-    }, 1000); // New car every second
+    }, 1000); 
 
     return () => clearInterval(interval);
   }, [roadWidth]);
 
-  // Move cars down and check for collisions
+  
   useEffect(() => {
     const moveCars = setInterval(() => {
       setCars((prevCars) => {
         return prevCars
           .map((car) => ({
             ...car,
-            yPos: car.yPos + car.speed, // Move the car downwards
+            yPos: car.yPos + car.speed, 
           }))
-          .filter((car) => car.yPos < roadHeight); // Remove off-screen cars
+          .filter((car) => car.yPos < roadHeight); 
       });
-      setScore((prevScore) => prevScore + 1); // Increase score
-    }, 1000 / 60); // Run at 60fps
+      setScore((prevScore) => prevScore + 1); 
+    }, 1000 / 60); 
 
     return () => clearInterval(moveCars);
   }, [roadHeight]);

@@ -3,40 +3,39 @@ import Car from './Car';
 import Traffic from './Traffic';
 import './App.css';
 
-const roadWidth = 600; // Road width
-const roadHeight = 800; // Road height
-const carWidth = 50; // Player car width
-const carHeight = 100; // Player car height
+const roadWidth = 600; 
+const roadHeight = 800; 
+const carWidth = 50; 
+const carHeight = 100; 
 
 function App() {
   const [playerPosition, setPlayerPosition] = useState(roadWidth / 2 - carWidth / 2);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
 
-  // Handle touch events for dragging the car
   const handleTouchStart = (e) => {
-    const touch = e.touches[0]; // Get the first touch
+    const touch = e.touches[0]; 
     setIsDragging(true);
-    setDragStartX(touch.clientX); // Get the starting position of the drag
+    setDragStartX(touch.clientX); 
   };
 
   const handleTouchMove = (e) => {
     if (isDragging) {
-      const touch = e.touches[0]; // Get the first touch
+      const touch = e.touches[0]; 
       const deltaX = touch.clientX - dragStartX;
       let newPosition = playerPosition + deltaX;
-      // Prevent the car from going out of bounds
+      
       newPosition = Math.max(0, Math.min(roadWidth - carWidth, newPosition));
       setPlayerPosition(newPosition);
-      setDragStartX(touch.clientX); // Update the drag start position for smooth dragging
+      setDragStartX(touch.clientX); 
     }
   };
 
   const handleTouchEnd = () => {
-    setIsDragging(false); // Stop dragging
+    setIsDragging(false); 
   };
 
-  // Listen for mouse events as a fallback (for non-touch devices)
+  
   useEffect(() => {
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
@@ -49,7 +48,6 @@ function App() {
     };
   }, [isDragging, dragStartX, playerPosition]);
 
-  // Listen for arrow key presses to move the car (optional)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowLeft' && playerPosition > 0) {
@@ -66,12 +64,10 @@ function App() {
   return (
     <div className="game-container">
       <div className="road" style={{ width: roadWidth, height: roadHeight }}>
-        {/* Player's car with touch functionality */}
         <Car
           position={playerPosition}
         />
         
-        {/* Traffic */}
         <Traffic roadWidth={roadWidth} roadHeight={roadHeight} />
       </div>
     </div>

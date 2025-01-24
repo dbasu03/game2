@@ -5,7 +5,7 @@ function Car({ position }) {
     <div
       style={{
         position: 'absolute',
-        bottom: '20px', // Position the player's car at the bottom of the road
+        bottom: '20px',
         left: `${position}px`,
         width: '50px',
         height: '100px',
