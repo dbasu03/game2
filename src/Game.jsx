@@ -137,7 +137,6 @@ const Game = () => {
 
 export default Game;
 */
-
 import React, { useState, useEffect, useRef } from 'react';
 import GameObject from './GameObject';
 
@@ -167,6 +166,28 @@ const Game = () => {
       playerY.current = newY;
       playerRef.current.style.transform = `translateY(${playerY.current}px)`;
     }
+  };
+
+  // Handle touch events for mobile
+  const handleTouchStart = (e) => {
+    const touchY = e.touches[0].clientY;
+    playerY.current = touchY - playerRef.current.offsetHeight / 2;
+    playerRef.current.style.transform = `translateY(${playerY.current}px)`;
+  };
+
+  const handleTouchMove = (e) => {
+    const touchY = e.touches[0].clientY;
+    const newY = touchY - playerRef.current.offsetHeight / 2;
+
+    // Constrain movement within the game area
+    if (newY >= 0 && newY <= 350) { // Prevent player from going out of bounds
+      playerY.current = newY;
+      playerRef.current.style.transform = `translateY(${playerY.current}px)`;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    // Handle touch end (optional, can be left empty)
   };
 
   // Generate objects moving from the right side
@@ -212,7 +233,7 @@ const Game = () => {
 
   // Dynamic frequency based on score (increase difficulty as score increases)
   useEffect(() => {
-    const frequency = Math.random()*1000; // Maximum speed (obstacle generation) happens as score increases
+    const frequency = Math.random() * 1000; // Maximum speed (obstacle generation) happens as score increases
     const objectGenerationInterval = setInterval(generateObject, frequency);
 
     return () => clearInterval(objectGenerationInterval);
@@ -239,6 +260,9 @@ const Game = () => {
         color: 'white',
       }}
       onKeyDown={handleKeyDown}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <div
         style={{
